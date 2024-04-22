@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Entity
-@Table(name = "stats", schema = "public")
+@Table(name = "stats")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

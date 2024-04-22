@@ -15,15 +15,15 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 public class StatsServerController {
-    private final StatsServerService service;
+    private final StatsServerService statsServerService;
 
     @PostMapping("/hit")
     public void postStats(@RequestBody @Validated(Create.class) StatsDtoRequest statsDtoRequest) {
-        service.postStats(statsDtoRequest);
+        statsServerService.postStats(statsDtoRequest);
     }
 
     @GetMapping("/stats")
     public List<StatsDtoResponse> getStats(@RequestParam("start") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime start, @RequestParam("end") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end, @RequestParam(value = "uris", required = false) List<String> uris, @RequestParam(value = "unique", defaultValue = "false") boolean unique) {
-        return service.getStats(start, end, uris, unique);
+        return statsServerService.getStats(start, end, uris, unique);
     }
 }
