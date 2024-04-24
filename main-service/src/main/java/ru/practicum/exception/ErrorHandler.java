@@ -2,6 +2,7 @@ package ru.practicum.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -21,6 +22,18 @@ public class ErrorHandler {
                 "BAD_REQUEST",
                 "Incorrectly made request.",
                 e.getFieldError().getField() + ". Error: " + e.getFieldError().getDefaultMessage() + ". Value: " + e.getFieldError().getRejectedValue(),
+                LocalDateTime.now().toString()
+        );
+    }
+
+    @ExceptionHandler(EmptyResultDataAccessException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleEmptyResultDataAccessException(EmptyResultDataAccessException e) {
+        log.error("Объект не найден: {}", e.getMessage());
+        return new ErrorResponse(
+                "NOT_FOUND",
+                "The required object was not found.",
+                e.getMessage(),
                 LocalDateTime.now().toString()
         );
     }
