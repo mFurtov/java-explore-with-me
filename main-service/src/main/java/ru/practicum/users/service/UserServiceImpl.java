@@ -1,13 +1,14 @@
-package ru.practicum.user.service;
+package ru.practicum.users.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.user.dao.UserRepository;
-import ru.practicum.user.dto.NewUserRequest;
-import ru.practicum.user.dto.UserDto;
-import ru.practicum.user.mapper.UserMapper;
+import ru.practicum.users.dao.UserRepository;
+import ru.practicum.users.dto.NewUserRequest;
+import ru.practicum.users.dto.UserDto;
+import ru.practicum.users.mapper.UserMapper;
 
 import org.springframework.data.domain.Pageable;
+import ru.practicum.users.model.User;
 
 import java.util.List;
 
@@ -30,8 +31,11 @@ public class UserServiceImpl implements UserService {
             return UserMapper.mapUserDtoFromUserToList(userRepository.findByIdIn(ids, sort));
         }
     }
+    public User getUserNDto(int userId) {
+        return userRepository.getById(userId);
+    }
 
-    public void dellUser(int id) {
+        public void dellUser(int id) {
         userRepository.findById(id);
         userRepository.deleteById(id);
     }

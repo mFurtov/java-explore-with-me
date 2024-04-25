@@ -1,4 +1,4 @@
-package ru.practicum.user.controller;
+package ru.practicum.users.controller;
 
 
 import lombok.RequiredArgsConstructor;
@@ -9,9 +9,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.Create;
 import ru.practicum.pageable.PageableCreate;
-import ru.practicum.user.dto.NewUserRequest;
-import ru.practicum.user.dto.UserDto;
-import ru.practicum.user.service.UserService;
+import ru.practicum.users.dto.NewUserRequest;
+import ru.practicum.users.dto.UserDto;
+import ru.practicum.users.service.UserService;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.PositiveOrZero;
@@ -33,9 +33,8 @@ public class UserController {
         return userDto;
     }
     @GetMapping
-
     public List<UserDto> getUser(@RequestParam(required = false) List<Integer> ids, @RequestParam(defaultValue = "0") @PositiveOrZero int from, @RequestParam(defaultValue = "10") @Min(1) int size){
-       return userService.getUser(ids, PageableCreate.getPageable(from,size, Sort.by(Sort.Direction.DESC, "id")));
+       return userService.getUser(ids, PageableCreate.getPageable(from,size, Sort.by(Sort.Direction.ASC, "id")));
     }
 
 

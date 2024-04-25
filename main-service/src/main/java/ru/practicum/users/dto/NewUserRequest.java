@@ -1,4 +1,4 @@
-package ru.practicum.user.dto;
+package ru.practicum.users.dto;
 
 import lombok.Data;
 import ru.practicum.Create;
@@ -9,11 +9,11 @@ import javax.validation.constraints.Size;
 
 @Data
 public class NewUserRequest {
-    @Email
-    @NotBlank
-    @Size(min = 1, max = 255, groups = Create.class)
+    @Email(groups = Create.class)
+    @NotBlank(groups = Create.class)
+    @Size(min = 6, max = 254, groups = Create.class)
     private String email;
-    @NotBlank
-    @Size(min = 1, max = 255, groups = Create.class)
+    @NotBlank(groups = Create.class)
+    @Size(min = 2, max = 250, groups = Create.class)
     private String name;
 }

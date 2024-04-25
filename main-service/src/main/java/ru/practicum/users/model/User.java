@@ -1,4 +1,4 @@
-package ru.practicum.user.model;
+package ru.practicum.users.model;
 
 import lombok.*;
 import javax.persistence.*;
