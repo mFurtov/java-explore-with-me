@@ -57,6 +57,7 @@ public class Event {
     public Event(String annotation, Category category, String description, String eventDate, User initiator, Location location, Boolean paid, int participantLimit, boolean requestModeration, String title) {
         this.annotation = annotation;
         this.category = category;
+        this.createdOn = LocalDateTime.now();
         this.description = description;
         this.eventDate = formatterData(eventDate);
         this.initiator = initiator;

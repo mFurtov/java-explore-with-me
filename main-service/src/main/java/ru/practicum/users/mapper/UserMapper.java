@@ -3,6 +3,7 @@ package ru.practicum.users.mapper;
 import lombok.experimental.UtilityClass;
 import ru.practicum.users.dto.NewUserRequest;
 import ru.practicum.users.dto.UserDto;
+import ru.practicum.users.dto.UserShortDto;
 import ru.practicum.users.model.User;
 
 import java.util.ArrayList;
@@ -25,5 +26,8 @@ public class UserMapper {
 
     public User mapUserFromNewUser(NewUserRequest user) {
         return new User(user.getEmail(), user.getName());
+    }
+    public UserShortDto mapUserShortFromUser(User user) {
+        return new UserShortDto(user.getId(), user.getName());
     }
 }

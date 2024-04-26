@@ -14,7 +14,7 @@ CREATE TABLE categories(
 );
 
 CREATE TABLE events(
- annotation VARCHAR(2000) UNIQUE NOT NULL,
+ annotation VARCHAR(2000) NOT NULL,
  category INTEGER NOT NULL,
  confirmed_requests INTEGER,
  created_On TIMESTAMP WITHOUT TIME ZONE,
