@@ -23,7 +23,14 @@ public class EventMapper {
         }
         return result;
     }
+    public List<EventFullDto> mapEventFullFromEventToList(Iterable<Event> event){
+        List<EventFullDto> result = new ArrayList<>();
+        for (Event e : event) {
+            result.add(mapEventFullFromEvent(e));
+        }
+        return result;
+    }
     public EventFullDto mapEventFullFromEvent(Event event){
-        return new EventFullDto(event.getAnnotation(), CategoryMapper.mapCategoryDtoFromCategory(event.getCategory()), event.getConfirmedRequests(), event.getCreatedOn(), event.getDescription(), event.getEventDate(),event.getId(),UserMapper.mapUserShortFromUser(event.getInitiator()),event.getLocation(),event.getPaid(),event.getParticipantLimit(),event.getPublishedOn(),event.isRequestModeration(),event.getState(),event.getTitle(),event.getViews());
+        return new EventFullDto(event.getAnnotation(), CategoryMapper.mapCategoryDtoFromCategory(event.getCategory()), event.getConfirmedRequests(), event.getCreatedOn(), event.getDescription(), event.getEventDate(),event.getId(),UserMapper.mapUserShortFromUser(event.getInitiator()),event.getLocation(),event.getPaid(),event.getParticipantLimit(),event.getPublishedOn(),event.getRequestModeration(),event.getState(),event.getTitle(),event.getViews());
     }
 }

@@ -1,6 +1,7 @@
 package ru.practicum.categories.conrtoller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -19,12 +20,15 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Validated
+@Slf4j
 public class CategoryController {
     private final CategoryService categoryService;
     @PostMapping("/admin/categories")
     @ResponseStatus(HttpStatus.CREATED)
     public CategoryDto getCategory(@RequestBody @Validated(Create.class) RequestCategoryDto requestCategoryDto){
-        return categoryService.postCategory(requestCategoryDto);
+        CategoryDto categoryDto = categoryService.postCategory(requestCategoryDto);
+        log.info("Добавлена категория {}",categoryDto.getName());
+        return categoryDto;
     }
 
     @DeleteMapping("/admin/categories/{id}")

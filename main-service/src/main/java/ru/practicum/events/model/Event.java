@@ -1,6 +1,7 @@
 package ru.practicum.events.model;
 
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 import ru.practicum.categories.model.Category;
 import ru.practicum.users.model.User;
 
@@ -29,6 +30,7 @@ public class Event {
     @Column(name = "description")
     private String description;
     @Column(name = "event_date")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime eventDate;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,9 +48,9 @@ public class Event {
     @Column(name = "published_on")
     private LocalDateTime publishedOn;
     @Column(name = "request_moderation")
-    private boolean requestModeration;
+    private Boolean requestModeration;
     @Enumerated(EnumType.STRING)
-    private State state;
+    private State state = State.PENDING;
     @Column(name = "title", nullable = false)
     private String title;
     @Column(name = "views")
@@ -68,9 +70,10 @@ public class Event {
         this.title = title;
     }
 
-    private LocalDateTime formatterData(String dataTime) {
+    private LocalDateTime formatterData(@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") String dataTime) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return LocalDateTime.parse(dataTime, formatter);
+
     }
 
     @Embeddable

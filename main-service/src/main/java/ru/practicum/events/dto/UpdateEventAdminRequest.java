@@ -10,8 +10,9 @@ import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+
 @Data
-public class UpdateEventUserRequest {
+public class UpdateEventAdminRequest {
     @Size(min = 20, max = 2000, groups = Create.class)
     private String annotation;
 
@@ -25,7 +26,7 @@ public class UpdateEventUserRequest {
     private Boolean paid;
     private Integer participantLimit;
     private Boolean requestModeration;
-    private StateActionUser stateAction;
+    private StateActionAdm stateAction;
     @Size(min = 3, max = 120, groups = Create.class)
     private String title;
 
@@ -37,9 +38,8 @@ public class UpdateEventUserRequest {
         private double lat;
         private double lon;
     }
-    public enum StateActionUser {
-        SEND_TO_REVIEW,
-        CANCEL_REVIEW;
+    public enum StateActionAdm {
+        PUBLISH_EVENT,
+        REJECT_EVENT;
     }
-
 }

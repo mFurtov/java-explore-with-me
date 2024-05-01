@@ -3,6 +3,7 @@ package ru.practicum.events.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import ru.practicum.Create;
 import ru.practicum.categories.model.Category;
 import ru.practicum.events.model.Event;

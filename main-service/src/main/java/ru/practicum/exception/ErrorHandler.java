@@ -21,7 +21,7 @@ public class ErrorHandler {
     public ErrorResponse validCountException(final MethodArgumentNotValidException e) {
         log.debug("Ошибка валидации 400 Bad request {}", e.getMessage());
         return new ErrorResponse(
-                "BAD_REQUEST",
+                HttpStatus.BAD_REQUEST,
                 "Incorrectly made request.",
                 e.getFieldError().getField() + ". Error: " + e.getFieldError().getDefaultMessage() + ". Value: " + e.getFieldError().getRejectedValue(),
                 LocalDateTime.now().toString()
@@ -35,7 +35,7 @@ public class ErrorHandler {
         if (e instanceof MethodArgumentTypeMismatchException) {
             MethodArgumentTypeMismatchException ex = (MethodArgumentTypeMismatchException) e;
             return new ErrorResponse(
-                    "BAD_REQUEST",
+                    HttpStatus.BAD_REQUEST,
                     "Incorrectly made request.",
                     "Failed to convert value of type '" + ex.getValue().getClass().getSimpleName() + "' to required type '" + ex.getRequiredType().getSimpleName() + "'; nested exception is " + ex.getCause(),
                     LocalDateTime.now().toString()
@@ -47,14 +47,14 @@ public class ErrorHandler {
                 message.append("Field: ").append(violation.getPropertyPath()).append(". Error: ").append(violation.getMessage()).append(". Value: ").append(violation.getInvalidValue()).append("; ");
             });
             return new ErrorResponse(
-                    "BAD_REQUEST",
+                    HttpStatus.BAD_REQUEST,
                     "Incorrectly made request.",
                     message.toString(),
                     LocalDateTime.now().toString()
             );
         }
         return new ErrorResponse(
-                "BAD_REQUEST",
+                HttpStatus.BAD_REQUEST,
                 "Validation failed.",
                 e.getMessage(),
                 LocalDateTime.now().toString()
@@ -66,7 +66,18 @@ public class ErrorHandler {
     public ErrorResponse handleEmptyResultDataAccessException(EmptyResultDataAccessException e) {
         log.error("Объект не найден: {}", e.getMessage());
         return new ErrorResponse(
-                "NOT_FOUND",
+HttpStatus.NOT_FOUND,
+                "The required object was not found.",
+                e.getMessage(),
+                LocalDateTime.now().toString()
+        );
+    }
+    @ExceptionHandler(ConflictException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse notFoundException(ConflictException e) {
+        log.error("Объект не найден: {}", e.getMessage());
+        return new ErrorResponse(
+                e.getHttpStatus(),
                 "The required object was not found.",
                 e.getMessage(),
                 LocalDateTime.now().toString()
@@ -78,7 +89,7 @@ public class ErrorHandler {
     public ErrorResponse handleDataIntegrityViolationException(DataIntegrityViolationException e) {
         log.error("Ошибка нарушения целостности данных: {}", e.getMessage());
         return new ErrorResponse(
-                "CONFLICT",
+                HttpStatus.CONFLICT,
                 "Integrity constraint has been violated.",
                 e.getMessage(),
                 LocalDateTime.now().toString()
