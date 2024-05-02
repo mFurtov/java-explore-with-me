@@ -8,6 +8,6 @@ import java.util.List;
 public interface RequestService {
     ParticipationRequestDto postRequest(int userId, int eventId);
 
-    ParticipationRequestDto getRequest(int userId);
+    List<ParticipationRequestDto>  getRequest(int userId);
     ParticipationRequestDto pathRequest (int userId,int requestId);
 }

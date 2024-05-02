@@ -3,6 +3,7 @@ package ru.practicum.events.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,7 @@ import ru.practicum.pageable.PageableCreate;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.PositiveOrZero;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -56,7 +58,7 @@ public class EventController {
     }
 
     @GetMapping("/users/{userId}/requests")
-    public ParticipationRequestDto getRequest(@PathVariable int userId) {
+    public List<ParticipationRequestDto>  getRequest(@PathVariable int userId) {
         return requestService.getRequest(userId);
     }
 
@@ -84,5 +86,23 @@ public class EventController {
     @GetMapping("/users/{userId}/events/{eventId}/requests")
     public List<ParticipationRequestDto> getAllRequest(@PathVariable int userId,@PathVariable int eventId){
         return eventService.getAllRequest(userId,eventId);
+    }
+    @GetMapping("/events")
+    public List<EventShortDto> getFilteredEvents(
+            @RequestParam String text,
+            @RequestParam List<Integer> categories,
+            @RequestParam Boolean paid,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")LocalDateTime rangeStart,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")LocalDateTime rangeEnd,
+            @RequestParam(defaultValue = "false") Boolean onlyAvailable,
+            @RequestParam String sort,
+            @RequestParam(defaultValue = "0") Integer from,
+            @RequestParam(defaultValue = "10") Integer size){
+        return eventService.findEventToParams(text,categories,paid,rangeStart,rangeEnd,onlyAvailable,sort,from,size);
+    }
+
+    @GetMapping("/events/{id}")
+    public EventFullDto getEventById(@PathVariable int id){
+        return eventService.getEventById(id);
     }
 }

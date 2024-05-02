@@ -3,6 +3,7 @@ package ru.practicum.events.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.practicum.categories.model.Category;
@@ -16,6 +17,7 @@ import ru.practicum.events.model.Event;
 import ru.practicum.events.model.Request;
 import ru.practicum.events.model.State;
 import ru.practicum.exception.ConflictException;
+import ru.practicum.pageable.PageableCreate;
 import ru.practicum.users.model.User;
 import ru.practicum.users.service.UserService;
 
@@ -223,12 +225,13 @@ public class EventServiceImpl implements EventService {
             if (i < maxApprovedRequests) {
                 req.setStatus(State.CONFIRMED);
                 eventRequestStatusUpdateResult.getConfirmedRequests().add(RequestMapper.mapToRequestDtoFromRequest(req));
+                event.setConfirmedRequests(+1);
             } else {
                 req.setStatus(State.REJECTED);
                 eventRequestStatusUpdateResult.getRejectedRequests().add(RequestMapper.mapToRequestDtoFromRequest(req));
             }
         }
-
+        eventRepository.save(event);
         requestsRepository.saveAll(requests);
         return eventRequestStatusUpdateResult;
 
@@ -243,6 +246,30 @@ public class EventServiceImpl implements EventService {
     @Override
     public List<EventFullDto> getAllEventsInParam(List<Integer> users, List<State> states, List<Integer> categories, String rangeStart, String rangeEnd, Pageable pageable) {
         return EventMapper.mapEventFullFromEventToList(eventRepository.findEventsByInitiatorIdInAndStateInAndCategoryIdInAndEventDateGreaterThanEqualAndEventDateLessThanEqual(users, states, categories, formatterData(rangeStart), formatterData(rangeEnd), pageable));
+    }
+
+    @Override
+    public List<EventShortDto> findEventToParams(String text, List<Integer> category, Boolean paid, LocalDateTime start, LocalDateTime end, Boolean onlyAvailable, String order, int from, int size) {
+        if (order.equalsIgnoreCase("EVENT_DATE")) {
+            order = "eventDate";
+        } else {
+            order = "views";
+        }
+        if (start == null) {
+            start = LocalDateTime.now();
+            end = start.plusYears(100);
+        }
+        if (onlyAvailable) {
+            return EventMapper.mapEventShortFromEventToList(eventRepository.findEventToParamsAvailable(text, category, paid, start, end, PageableCreate.getPageable(from, size, Sort.by(Sort.Direction.ASC, order))));
+
+        } else {
+            return EventMapper.mapEventShortFromEventToList(eventRepository.findEventToParams(text, category, paid, start, end, PageableCreate.getPageable(from, size, Sort.by(Sort.Direction.ASC, order))));
+        }
+    }
+
+    @Override
+    public EventFullDto getEventById(int id) {
+        return EventMapper.mapEventFullFromEvent(eventRepository.findEventById(id));
     }
 
 

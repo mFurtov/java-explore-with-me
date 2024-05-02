@@ -7,17 +7,35 @@ import ru.practicum.categories.dto.CategoryDto;
 import ru.practicum.users.dto.UserDto;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 public class EventShortDto {
     private String annotation;
     private CategoryDto category;
     private int confirmedRequests;
-    private LocalDateTime eventDate;
+    private String eventDate;
     private int id;
     private UserDto initiator;
     private Boolean paid;
     private String title;
     private int views;
+
+    public EventShortDto(String annotation, CategoryDto category, int confirmedRequests, LocalDateTime eventDate, int id, UserDto initiator, Boolean paid, String title, int views) {
+        this.annotation = annotation;
+        this.category = category;
+        this.confirmedRequests = confirmedRequests;
+        this.eventDate = formatData(eventDate);
+        this.id = id;
+        this.initiator = initiator;
+        this.paid = paid;
+        this.title = title;
+        this.views = views;
+    }
+
+    private String formatData(LocalDateTime dateTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return dateTime.format(formatter);
+    }
 }

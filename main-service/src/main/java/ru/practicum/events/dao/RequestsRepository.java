@@ -19,7 +19,7 @@ public interface RequestsRepository extends JpaRepository<Request,Integer> {
             return request.get();
         }
     }
-    Request findByRequesterId (int userId);
+    List<Request> findByRequesterId (int userId);
 
     List<Request> findAllByEvent (Event event);
 }

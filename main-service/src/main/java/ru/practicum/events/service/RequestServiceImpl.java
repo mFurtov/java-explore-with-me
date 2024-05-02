@@ -13,6 +13,7 @@ import ru.practicum.events.dao.RequestsRepository;
 import ru.practicum.users.model.User;
 import ru.practicum.users.service.UserService;
 
+import java.util.List;
 
 
 @Service
@@ -30,8 +31,8 @@ public class RequestServiceImpl implements RequestService {
     }
 
     @Override
-    public ParticipationRequestDto getRequest(int userId) {
-        return RequestMapper.mapToRequestDtoFromRequest(requestsRepository.findByRequesterId(userId));
+    public List<ParticipationRequestDto> getRequest(int userId) {
+        return RequestMapper.mapToRequestDtoFromRequestList(requestsRepository.findByRequesterId(userId));
     }
 
     @Override
