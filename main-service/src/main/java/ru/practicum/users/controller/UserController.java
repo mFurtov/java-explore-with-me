@@ -27,14 +27,15 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDto postUser(@RequestBody @Validated(Create.class) NewUserRequest userRequest){
+    public UserDto postUser(@RequestBody @Validated(Create.class) NewUserRequest userRequest) {
         UserDto userDto = userService.postUser(userRequest);
-        log.info("Добавлен пользователь с id {}",userDto.getId());
+        log.info("Добавлен пользователь с id {}", userDto.getId());
         return userDto;
     }
+
     @GetMapping
-    public List<UserDto> getUser(@RequestParam(required = false) List<Integer> ids, @RequestParam(defaultValue = "0") @PositiveOrZero int from, @RequestParam(defaultValue = "10") @Min(1) int size){
-       return userService.getUser(ids, PageableCreate.getPageable(from,size, Sort.by(Sort.Direction.ASC, "id")));
+    public List<UserDto> getUser(@RequestParam(required = false) List<Integer> ids, @RequestParam(defaultValue = "0") @PositiveOrZero int from, @RequestParam(defaultValue = "10") @Min(1) int size) {
+        return userService.getUser(ids, PageableCreate.getPageable(from, size, Sort.by(Sort.Direction.ASC, "id")));
     }
 
 

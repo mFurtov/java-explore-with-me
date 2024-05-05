@@ -1,14 +1,22 @@
 package ru.practicum.compilations.modul;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.practicum.events.model.Event;
 
 import javax.persistence.*;
 import java.util.List;
+
 @Entity
 @Table(name = "compilations")
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
 public class Compilation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
 
     @Column(name = "title")
     private String title;
@@ -22,4 +30,10 @@ public class Compilation {
             joinColumns = @JoinColumn(name = "compilation_id"),
             inverseJoinColumns = @JoinColumn(name = "event_id"))
     private List<Event> events;
+
+    public Compilation(String title, boolean pinned, List<Event> events) {
+        this.title = title;
+        this.pinned = pinned;
+        this.events = events;
+    }
 }

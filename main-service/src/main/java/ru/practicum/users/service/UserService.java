@@ -10,7 +10,10 @@ import java.util.List;
 
 public interface UserService {
     UserDto postUser(NewUserRequest user);
+
     List<UserDto> getUser(List<Integer> ids, Pageable sort);
+
     void dellUser(int id);
+
     User getUserNDto(int userId);
 }

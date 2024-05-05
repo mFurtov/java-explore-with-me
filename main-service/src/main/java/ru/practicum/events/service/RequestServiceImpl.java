@@ -3,6 +3,7 @@ package ru.practicum.events.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import ru.practicum.events.dao.EventRepository;
 import ru.practicum.events.dto.ParticipationRequestDto;
 import ru.practicum.events.mapper.RequestMapper;
 import ru.practicum.events.model.Request;
@@ -21,17 +22,32 @@ import java.util.List;
 public class RequestServiceImpl implements RequestService {
     private final RequestsRepository requestsRepository;
     private final UserService userService;
-    private final EventService eventService;
+    private final EventRepository eventRepository;
 
     @Override
     public ParticipationRequestDto postRequest(int userId, int eventId) {
         User user = userService.getUserNDto(userId);
-        Event event = eventService.getEventByUserNDto(eventId);
+        Event event = eventRepository.findByIdOrThrow(eventId);
+        if (requestsRepository.findByRequesterIdAndEventId(userId, eventId) != null) {
+            throw new ConflictException("You cannot add a repeat request", HttpStatus.CONFLICT);
+        }
+        if (event.getParticipantLimit() == 0) {
+            return RequestMapper.mapToRequestDtoFromRequest(requestsRepository.save(new Request(event, user, State.CONFIRMED)));
+        }
+        if (event.getInitiator().getId() == userId || !event.getState().equals(State.PUBLISHED) || event.getParticipantLimit() == event.getConfirmedRequests()) {
+            throw new ConflictException("the initiator of the event cannot add a request to participate in his event; it is impossible to participate in an unpublished event; if the event has reached the limit of requests for participation, an error must be returned", HttpStatus.CONFLICT);
+        }
+        if (!event.getRequestModeration()) {
+            event.setConfirmedRequests(+1);
+            eventRepository.save(event);
+            return RequestMapper.mapToRequestDtoFromRequest(requestsRepository.save(new Request(event, user, State.CONFIRMED)));
+        }
         return RequestMapper.mapToRequestDtoFromRequest(requestsRepository.save(new Request(event, user)));
     }
 
     @Override
     public List<ParticipationRequestDto> getRequest(int userId) {
+        userService.getUserNDto(userId);
         return RequestMapper.mapToRequestDtoFromRequestList(requestsRepository.findByRequesterId(userId));
     }
 

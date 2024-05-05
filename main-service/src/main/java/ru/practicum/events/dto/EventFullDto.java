@@ -1,13 +1,10 @@
 package ru.practicum.events.dto;
 
 import lombok.*;
-import org.springframework.format.annotation.DateTimeFormat;
 import ru.practicum.categories.dto.CategoryDto;
 import ru.practicum.events.model.Event;
 import ru.practicum.events.model.State;
-import ru.practicum.users.dto.UserDto;
 import ru.practicum.users.dto.UserShortDto;
-import ru.practicum.users.model.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -58,6 +55,7 @@ public class EventFullDto {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         return dateTime.format(formatter);
     }
+
     @Embeddable
     @Data
     public static class Location {

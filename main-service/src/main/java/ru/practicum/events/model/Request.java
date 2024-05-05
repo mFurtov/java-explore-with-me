@@ -1,8 +1,6 @@
 package ru.practicum.events.model;
 
 import lombok.*;
-import ru.practicum.events.model.Event;
-import ru.practicum.events.model.State;
 import ru.practicum.users.model.User;
 
 
@@ -43,4 +41,9 @@ public class Request {
         this.requester = requester;
     }
 
+    public Request(Event event, User requester, State status) {
+        this.event = event;
+        this.requester = requester;
+        this.status = status;
+    }
 }

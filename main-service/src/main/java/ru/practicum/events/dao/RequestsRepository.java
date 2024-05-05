@@ -10,16 +10,19 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface RequestsRepository extends JpaRepository<Request,Integer> {
+public interface RequestsRepository extends JpaRepository<Request, Integer> {
     default Request findByIdOrThrow(Integer id) {
         Optional<Request> request = findById(id);
         if (request.isEmpty()) {
-            throw new EmptyResultDataAccessException(String.format("Request with id=%d was not found",id) ,1);
-        }else {
+            throw new EmptyResultDataAccessException(String.format("Request with id=%d was not found", id), 1);
+        } else {
             return request.get();
         }
     }
-    List<Request> findByRequesterId (int userId);
 
-    List<Request> findAllByEvent (Event event);
+    List<Request> findByRequesterId(int userId);
+
+    Request findByRequesterIdAndEventId(int userId, int eventId);
+
+    List<Request> findAllByEvent(Event event);
 }

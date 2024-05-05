@@ -23,31 +23,33 @@ import java.util.List;
 @Slf4j
 public class CategoryController {
     private final CategoryService categoryService;
+
     @PostMapping("/admin/categories")
     @ResponseStatus(HttpStatus.CREATED)
-    public CategoryDto getCategory(@RequestBody @Validated(Create.class) RequestCategoryDto requestCategoryDto){
+    public CategoryDto getCategory(@RequestBody @Validated(Create.class) RequestCategoryDto requestCategoryDto) {
         CategoryDto categoryDto = categoryService.postCategory(requestCategoryDto);
-        log.info("Добавлена категория {}",categoryDto.getName());
+        log.info("Добавлена категория {}", categoryDto.getName());
         return categoryDto;
     }
 
     @DeleteMapping("/admin/categories/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void dellCategory(@PathVariable int id){
+    public void dellCategory(@PathVariable int id) {
         categoryService.dellCategory(id);
     }
 
     @PatchMapping("/admin/categories/{id}")
-    CategoryDto patchCategory(@PathVariable int id,@RequestBody @Validated(Update.class) RequestCategoryDto requestCategoryDto){
-        return categoryService.patchCategory(id,requestCategoryDto);
+    CategoryDto patchCategory(@PathVariable int id, @RequestBody @Validated(Update.class) RequestCategoryDto requestCategoryDto) {
+        return categoryService.patchCategory(id, requestCategoryDto);
     }
 
     @GetMapping("/categories")
-    public List<CategoryDto> getAllCategory(@RequestParam(defaultValue = "0") @PositiveOrZero int from, @RequestParam(defaultValue = "10") @Min(1) int size){
-        return categoryService.getAllCategory(PageableCreate.getPageable(from,size, Sort.by(Sort.Direction.ASC,"id")));
+    public List<CategoryDto> getAllCategory(@RequestParam(defaultValue = "0") @PositiveOrZero int from, @RequestParam(defaultValue = "10") @Min(1) int size) {
+        return categoryService.getAllCategory(PageableCreate.getPageable(from, size, Sort.by(Sort.Direction.ASC, "id")));
     }
+
     @GetMapping("/categories/{catId}")
-    public CategoryDto getCategoryById(@PathVariable int catId){
+    public CategoryDto getCategoryById(@PathVariable int catId) {
         return categoryService.getCategoryById(catId);
     }
 }

@@ -8,12 +8,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.Create;
+import ru.practicum.Update;
 import ru.practicum.events.dto.*;
 import ru.practicum.events.model.State;
 import ru.practicum.events.service.EventService;
 import ru.practicum.events.service.RequestService;
 import ru.practicum.pageable.PageableCreate;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDateTime;
@@ -45,7 +47,7 @@ public class EventController {
     }
 
     @PatchMapping("/users/{userId}/events/{eventId}")
-    public EventFullDto patchEventByUserIdEvent(@PathVariable int userId, @PathVariable int eventId, @RequestBody @Validated(Create.class) UpdateEventUserRequest updateEventUserRequest) {
+    public EventFullDto patchEventByUserIdEvent(@PathVariable int userId, @PathVariable int eventId, @Validated(Update.class) @RequestBody UpdateEventUserRequest updateEventUserRequest) {
         return eventService.patchEventByUserId(userId, eventId, updateEventUserRequest);
     }
 
@@ -58,7 +60,7 @@ public class EventController {
     }
 
     @GetMapping("/users/{userId}/requests")
-    public List<ParticipationRequestDto>  getRequest(@PathVariable int userId) {
+    public List<ParticipationRequestDto> getRequest(@PathVariable int userId) {
         return requestService.getRequest(userId);
     }
 
@@ -74,35 +76,37 @@ public class EventController {
 
     @GetMapping("/admin/events")
     public List<EventFullDto> getAllEventsInParam(@RequestParam(required = false) List<Integer> users, @RequestParam(required = false) List<State> states, @RequestParam(required = false) List<Integer> categories, @RequestParam(required = false) String rangeStart, @RequestParam(required = false) String rangeEnd, @RequestParam(defaultValue = "0") @PositiveOrZero int from, @RequestParam(defaultValue = "10") @Min(1) int size) {
-        return eventService.getAllEventsInParam(users, states,  categories,  rangeStart, rangeEnd, PageableCreate.getPageable(from,size,Sort.by(Sort.Direction.ASC, "id")));
+        return eventService.getAllEventsInParam(users, states, categories, rangeStart, rangeEnd, PageableCreate.getPageable(from, size, Sort.by(Sort.Direction.ASC, "id")));
     }
 
     @PatchMapping("/admin/events/{eventId}")
-    public EventFullDto patchEventAdmin(@PathVariable int eventId, @RequestBody UpdateEventAdminRequest updateEventAdminRequest) {
+    public EventFullDto patchEventAdmin(@PathVariable int eventId, @Validated(Update.class) @RequestBody UpdateEventAdminRequest updateEventAdminRequest) {
         EventFullDto eventFullDto = eventService.patchEventAdmin(eventId, updateEventAdminRequest);
-        log.info("Обновлено событие {}",eventFullDto.getId());
+        log.info("Обновлено событие {}", eventFullDto.getId());
         return eventFullDto;
     }
+
     @GetMapping("/users/{userId}/events/{eventId}/requests")
-    public List<ParticipationRequestDto> getAllRequest(@PathVariable int userId,@PathVariable int eventId){
-        return eventService.getAllRequest(userId,eventId);
+    public List<ParticipationRequestDto> getAllRequest(@PathVariable int userId, @PathVariable int eventId) {
+        return eventService.getAllRequest(userId, eventId);
     }
+
     @GetMapping("/events")
-    public List<EventShortDto> getFilteredEvents(
-            @RequestParam String text,
-            @RequestParam List<Integer> categories,
-            @RequestParam Boolean paid,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")LocalDateTime rangeStart,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")LocalDateTime rangeEnd,
-            @RequestParam(defaultValue = "false") Boolean onlyAvailable,
-            @RequestParam String sort,
-            @RequestParam(defaultValue = "0") Integer from,
-            @RequestParam(defaultValue = "10") Integer size){
-        return eventService.findEventToParams(text,categories,paid,rangeStart,rangeEnd,onlyAvailable,sort,from,size);
+    public List<EventShortDto> getFilteredEvents(HttpServletRequest httpServletRequest,
+                                                 @RequestParam(required = false) String text,
+                                                 @RequestParam(required = false) List<Integer> categories,
+                                                 @RequestParam(required = false) Boolean paid,
+                                                 @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeStart,
+                                                 @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime rangeEnd,
+                                                 @RequestParam(defaultValue = "false") Boolean onlyAvailable,
+                                                 @RequestParam(required = false) String sort,
+                                                 @RequestParam(defaultValue = "0") Integer from,
+                                                 @RequestParam(defaultValue = "10") Integer size) {
+        return eventService.findEventToParams(httpServletRequest, text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
     }
 
     @GetMapping("/events/{id}")
-    public EventFullDto getEventById(@PathVariable int id){
-        return eventService.getEventById(id);
+    public EventFullDto getEventById(HttpServletRequest httpServletRequest, @PathVariable int id) {
+        return eventService.getEventById(httpServletRequest, id);
     }
 }

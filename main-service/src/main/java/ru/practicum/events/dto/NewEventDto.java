@@ -3,23 +3,20 @@ package ru.practicum.events.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 import ru.practicum.Create;
-import ru.practicum.categories.model.Category;
 import ru.practicum.events.model.Event;
 import ru.practicum.events.validator.DataValid;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
-import java.time.LocalDateTime;
+import javax.validation.constraints.*;
+
 @Data
 public class NewEventDto {
     @NotBlank(groups = Create.class)
     @Size(min = 20, max = 2000, groups = Create.class)
     private String annotation;
-    private int category;
+    @NotNull(groups = Create.class)
+    private Integer category;
     @NotBlank(groups = Create.class)
     @Size(min = 20, max = 7000, groups = Create.class)
     private String description;
@@ -30,8 +27,9 @@ public class NewEventDto {
     @Embedded
     private Event.Location location;
     private Boolean paid = false;
+    @PositiveOrZero(groups = Create.class)
     private int participantLimit = 0;
-    private boolean requestModeration =true;
+    private Boolean requestModeration = true;
     @NotBlank(groups = Create.class)
     @Size(min = 3, max = 120, groups = Create.class)
     private String title;

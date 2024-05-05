@@ -27,6 +27,7 @@ public class UserMapper {
     public User mapUserFromNewUser(NewUserRequest user) {
         return new User(user.getEmail(), user.getName());
     }
+
     public UserShortDto mapUserShortFromUser(User user) {
         return new UserShortDto(user.getId(), user.getName());
     }
