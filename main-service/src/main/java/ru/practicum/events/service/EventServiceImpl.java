@@ -76,65 +76,66 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventFullDto patchEventByUserId(int userId, int eventId, UpdateEventUserRequest updateEventUserRequest) {
         Event event = eventRepository.findByInitiatorIdAndId(userId, eventId);
+        if (event == null) {
+            throw new NotFoundException(String.format("Event with id=%d was not found", eventId), HttpStatus.NOT_FOUND);
+        }
 
         if (!event.getState().equals(PENDING) && !event.getState().equals(CANCELED)) {
             throw new ConflictException("Only pending or canceled events can be changed", HttpStatus.CONFLICT);
         }
 
-        if (event != null) {
-            if (event.getState() != CANCELED && event.getState() != PENDING) {
-                throw new ConflictException("Event state is not eligible for modification", HttpStatus.CONFLICT);
-            }
-
-            LocalDateTime twoHoursFromNow = LocalDateTime.now().plusHours(2);
-            if (updateEventUserRequest.getEventDate() != null && formatterData(updateEventUserRequest.getEventDate()).isBefore(twoHoursFromNow)) {
-                throw new ConflictException("Event date and time cannot be earlier than two hours from now", HttpStatus.CONFLICT);
-            }
-
-            if (updateEventUserRequest.getAnnotation() != null) {
-                event.setAnnotation(updateEventUserRequest.getAnnotation());
-            }
-            if (updateEventUserRequest.getCategory() != null) {
-                Category category = categoryService.getCategoryNDtoById(updateEventUserRequest.getCategory());
-                event.setCategory(category);
-            }
-            if (updateEventUserRequest.getDescription() != null) {
-                event.setDescription(updateEventUserRequest.getDescription());
-            }
-            if (updateEventUserRequest.getEventDate() != null) {
-                event.setEventDate(formatterData(updateEventUserRequest.getEventDate()));
-            }
-            if (updateEventUserRequest.getLocation() != null) {
-                event.setLocation(updateEventUserRequest.getLocation());
-            }
-            if (updateEventUserRequest.getPaid() != null) {
-                event.setPaid(updateEventUserRequest.getPaid());
-            }
-            if (updateEventUserRequest.getParticipantLimit() != null) {
-                event.setParticipantLimit(updateEventUserRequest.getParticipantLimit());
-            }
-            if (updateEventUserRequest.getRequestModeration() != null) {
-                event.setRequestModeration(updateEventUserRequest.getRequestModeration());
-            }
-            if (updateEventUserRequest.getStateAction() != null) {
-                switch (updateEventUserRequest.getStateAction()) {
-                    case SEND_TO_REVIEW:
-                        event.setState(PENDING);
-                        break;
-                    case CANCEL_REVIEW:
-                        event.setState(CANCELED);
-                        break;
-                }
-
-            }
-            if (updateEventUserRequest.getTitle() != null) {
-                event.setTitle(updateEventUserRequest.getTitle());
-            }
-
-            return EventMapper.mapEventFullFromEvent(eventRepository.save(event));
-        } else {
-            throw new NotFoundException(String.format("Event with id=%d was not found", eventId), HttpStatus.NOT_FOUND);
+        if (event.getState() != CANCELED && event.getState() != PENDING) {
+            throw new ConflictException("Event state is not eligible for modification", HttpStatus.CONFLICT);
         }
+
+        LocalDateTime twoHoursFromNow = LocalDateTime.now().plusHours(2);
+        if (updateEventUserRequest.getEventDate() != null && formatterData(updateEventUserRequest.getEventDate()).isBefore(twoHoursFromNow)) {
+            throw new ConflictException("Event date and time cannot be earlier than two hours from now", HttpStatus.CONFLICT);
+        }
+
+        if (updateEventUserRequest.getAnnotation() != null) {
+            event.setAnnotation(updateEventUserRequest.getAnnotation());
+        }
+        if (updateEventUserRequest.getCategory() != null) {
+            Category category = categoryService.getCategoryNDtoById(updateEventUserRequest.getCategory());
+            event.setCategory(category);
+        }
+        if (updateEventUserRequest.getDescription() != null) {
+            event.setDescription(updateEventUserRequest.getDescription());
+        }
+        if (updateEventUserRequest.getEventDate() != null) {
+            event.setEventDate(formatterData(updateEventUserRequest.getEventDate()));
+        }
+        if (updateEventUserRequest.getLocation() != null) {
+            event.setLocation(updateEventUserRequest.getLocation());
+        }
+        if (updateEventUserRequest.getPaid() != null) {
+            event.setPaid(updateEventUserRequest.getPaid());
+        }
+        if (updateEventUserRequest.getParticipantLimit() != null) {
+            event.setParticipantLimit(updateEventUserRequest.getParticipantLimit());
+        }
+        if (updateEventUserRequest.getRequestModeration() != null) {
+            event.setRequestModeration(updateEventUserRequest.getRequestModeration());
+        }
+        if (updateEventUserRequest.getStateAction() != null) {
+            switch (updateEventUserRequest.getStateAction()) {
+                case SEND_TO_REVIEW:
+                    event.setState(PENDING);
+                    break;
+                case CANCEL_REVIEW:
+                    event.setState(CANCELED);
+                    break;
+            }
+
+        }
+        if (updateEventUserRequest.getTitle() != null) {
+            event.setTitle(updateEventUserRequest.getTitle());
+        }
+
+        return EventMapper.mapEventFullFromEvent(eventRepository.save(event));
+
+
     }
 
     @Override

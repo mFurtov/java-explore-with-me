@@ -21,6 +21,8 @@ import java.util.Map;
 public class StatsClient extends BaseClient {
     private static final String API_PREFIX = "/";
 
+    String url;
+
     @Autowired
     public StatsClient(@Value("${stat.server.url}") String url,
                        RestTemplateBuilder builder) {
@@ -30,11 +32,12 @@ public class StatsClient extends BaseClient {
                         .requestFactory(HttpComponentsClientHttpRequestFactory::new)
                         .build()
         );
+        this.url = url;
     }
 
     public void post(EventStatDto eventStatDto) {
         try {
-            rest.exchange("http://stats-server:9090/hit", HttpMethod.POST, new HttpEntity<>(eventStatDto, defaultHeaders()),
+            rest.exchange(url + "/hit", HttpMethod.POST, new HttpEntity<>(eventStatDto, defaultHeaders()),
                     Object.class);
         } catch (HttpStatusCodeException e) {
             throw new ServerException("Ошибка клиента при отправке метода post");
