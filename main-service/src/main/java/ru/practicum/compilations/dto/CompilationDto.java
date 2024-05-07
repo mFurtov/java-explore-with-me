@@ -11,8 +11,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CompilationDto {
-    List<EventShortDto> events;
-    int id;
-    Boolean pinned;
-    String title;
+    private List<EventShortDto> events;
+    private int id;
+    private Boolean pinned;
+    private String title;
 }

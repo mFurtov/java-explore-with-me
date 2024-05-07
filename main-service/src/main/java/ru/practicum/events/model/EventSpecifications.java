@@ -1,13 +1,15 @@
 package ru.practicum.events.model;
 
+import lombok.experimental.UtilityClass;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.Predicate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@UtilityClass
 public class EventSpecifications {
-    public static Specification<Event> withText(String text) {
+    public Specification<Event> withText(String text) {
         return (root, query, criteriaBuilder) -> {
             if (text != null && !text.isEmpty()) {
                 String searchText = "%" + text + "%";
@@ -19,7 +21,7 @@ public class EventSpecifications {
         };
     }
 
-    public static Specification<Event> withCategories(List<Integer> categories) {
+    public Specification<Event> withCategories(List<Integer> categories) {
         return (root, query, criteriaBuilder) -> {
             if (categories != null && !categories.isEmpty()) {
                 return root.join("category").get("id").in(categories);
@@ -28,7 +30,7 @@ public class EventSpecifications {
         };
     }
 
-    public static Specification<Event> withPaid(Boolean paid) {
+    public Specification<Event> withPaid(Boolean paid) {
         return (root, query, criteriaBuilder) -> {
             if (paid != null) {
                 return criteriaBuilder.equal(root.get("paid"), paid);
@@ -37,7 +39,7 @@ public class EventSpecifications {
         };
     }
 
-    public static Specification<Event> withDateRange(LocalDateTime start, LocalDateTime end) {
+    public Specification<Event> withDateRange(LocalDateTime start, LocalDateTime end) {
         return (root, query, criteriaBuilder) -> {
             if (start != null && end != null) {
                 return criteriaBuilder.between(root.get("eventDate"), start, end);
@@ -46,7 +48,7 @@ public class EventSpecifications {
         };
     }
 
-    public static Specification<Event> withUsers(List<Integer> users) {
+    public Specification<Event> withUsers(List<Integer> users) {
         return (root, query, criteriaBuilder) -> {
             if (users != null && !users.isEmpty()) {
                 return root.join("initiator").get("id").in(users);
@@ -55,7 +57,7 @@ public class EventSpecifications {
         };
     }
 
-    public static Specification<Event> withStates(List<State> states) {
+    public Specification<Event> withStates(List<State> states) {
         return (root, query, criteriaBuilder) -> {
             if (states != null && !states.isEmpty()) {
                 return root.get("state").in(states);

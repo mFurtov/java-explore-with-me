@@ -24,7 +24,6 @@ public class NewEventDto {
     @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}", groups = Create.class)
     @DataValid(groups = Create.class)
     private String eventDate;
-    @Embedded
     private Event.Location location;
     private Boolean paid = false;
     @PositiveOrZero(groups = Create.class)
@@ -34,7 +33,6 @@ public class NewEventDto {
     @Size(min = 3, max = 120, groups = Create.class)
     private String title;
 
-    @Embeddable
     @Data
     @AllArgsConstructor
     @NoArgsConstructor

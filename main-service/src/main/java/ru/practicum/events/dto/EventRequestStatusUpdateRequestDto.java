@@ -6,9 +6,9 @@ import java.util.List;
 
 @Data
 public class EventRequestStatusUpdateRequestDto {
-    List<Integer> requestIds;
+    private List<Integer> requestIds;
 
-    StateActionEventUpdate status;
+    private StateActionEventUpdate status;
 
     public enum StateActionEventUpdate {
         CONFIRMED,

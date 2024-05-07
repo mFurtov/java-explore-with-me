@@ -1,11 +1,12 @@
 package ru.practicum.compilations.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import ru.practicum.categories.service.CategoryService;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.compilations.dao.CompilationRepository;
 import ru.practicum.compilations.dto.CompilationDto;
 import ru.practicum.compilations.dto.NewCompilationDto;
@@ -21,11 +22,12 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CompilationServiceImpl implements CompilationService {
     private final EventRepository eventRepository;
     private final CompilationRepository compilationRepository;
-    private final CategoryService categoryService;
 
+    @Transactional
     @Override
     public CompilationDto postCompilation(NewCompilationDto newCompilationDto) {
         List<Event> event;
@@ -37,10 +39,12 @@ public class CompilationServiceImpl implements CompilationService {
         try {
             return CompilationMapper.mapCompilationToDto(compilationRepository.save(CompilationMapper.mapCompilationFromDto(newCompilationDto, event)));
         } catch (DataIntegrityViolationException e) {
+            log.debug("Напрушение целостнсти данных");
             throw new ConflictException(e.getMessage(), HttpStatus.CONFLICT);
         }
     }
 
+    @Transactional
     @Override
     public List<CompilationDto> getAllCompilation(Boolean pinned, Pageable sort) {
         if (pinned == null) {
@@ -50,17 +54,20 @@ public class CompilationServiceImpl implements CompilationService {
         }
     }
 
+    @Transactional
     @Override
     public CompilationDto getCompilation(int compId) {
         return CompilationMapper.mapCompilationToDto(compilationRepository.findByIdOrThrow(compId));
     }
 
+    @Transactional
     @Override
     public void dellCompilation(int compId) {
         compilationRepository.findByIdOrThrow(compId);
         compilationRepository.deleteById(compId);
     }
 
+    @Transactional
     @Override
     public CompilationDto patchCompilation(int compId, UpdateCompilationRequest updateCompilationRequest) {
         Compilation compilation = compilationRepository.getById(compId);

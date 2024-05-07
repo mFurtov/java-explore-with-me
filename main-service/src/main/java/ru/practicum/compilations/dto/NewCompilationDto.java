@@ -9,9 +9,9 @@ import java.util.List;
 
 @Data
 public class NewCompilationDto {
-    List<Integer> events;
-    Boolean pinned = false;
+    private List<Integer> events;
+    private Boolean pinned = false;
     @NotBlank(groups = Create.class)
     @Size(min = 1, max = 50, groups = Create.class)
-    String title;
+    private String title;
 }

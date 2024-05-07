@@ -3,6 +3,7 @@ package ru.practicum.events.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.events.dao.EventRepository;
 import ru.practicum.events.dto.ParticipationRequestDto;
 import ru.practicum.events.mapper.RequestMapper;
@@ -24,6 +25,7 @@ public class RequestServiceImpl implements RequestService {
     private final UserService userService;
     private final EventRepository eventRepository;
 
+    @Transactional
     @Override
     public ParticipationRequestDto postRequest(int userId, int eventId) {
         User user = userService.getUserNDto(userId);
@@ -45,12 +47,14 @@ public class RequestServiceImpl implements RequestService {
         return RequestMapper.mapToRequestDtoFromRequest(requestsRepository.save(new Request(event, user)));
     }
 
+    @Transactional
     @Override
     public List<ParticipationRequestDto> getRequest(int userId) {
         userService.getUserNDto(userId);
         return RequestMapper.mapToRequestDtoFromRequestList(requestsRepository.findByRequesterId(userId));
     }
 
+    @Transactional
     @Override
     public ParticipationRequestDto pathRequest(int userId, int requestId) {
         Request request = requestsRepository.findByIdOrThrow(requestId);

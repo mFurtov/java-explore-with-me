@@ -35,7 +35,9 @@ public class UserController {
 
     @GetMapping
     public List<UserDto> getUser(@RequestParam(required = false) List<Integer> ids, @RequestParam(defaultValue = "0") @PositiveOrZero int from, @RequestParam(defaultValue = "10") @Min(1) int size) {
-        return userService.getUser(ids, PageableCreate.getPageable(from, size, Sort.by(Sort.Direction.ASC, "id")));
+        List<UserDto> userDtos = userService.getUser(ids, PageableCreate.getPageable(from, size, Sort.by(Sort.Direction.ASC, "id")));
+        log.info("Выведен список пользователей согласно параметрам поиска, его размер {}", userDtos.size());
+        return userDtos;
     }
 
 

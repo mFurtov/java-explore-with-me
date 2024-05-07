@@ -17,6 +17,9 @@ import java.time.format.DateTimeFormatter;
 @Setter
 @ToString
 public class Event {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
     @Column(name = "annotation", nullable = false)
     private String annotation;
     @ManyToOne(fetch = FetchType.LAZY)
@@ -32,9 +35,6 @@ public class Event {
     @Column(name = "event_date")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime eventDate;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "initiator")
     @ToString.Exclude

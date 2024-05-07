@@ -7,8 +7,6 @@ import ru.practicum.Update;
 import ru.practicum.events.model.Event;
 import ru.practicum.events.validator.DataValid;
 
-import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
@@ -23,7 +21,6 @@ public class UpdateEventAdminRequest {
     @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}", groups = Update.class)
     @DataValid(groups = Update.class)
     private String eventDate;
-    @Embedded
     private Event.Location location;
     private Boolean paid;
     private Integer participantLimit;
@@ -32,7 +29,6 @@ public class UpdateEventAdminRequest {
     @Size(min = 3, max = 120, groups = Update.class)
     private String title;
 
-    @Embeddable
     @Data
     @AllArgsConstructor
     @NoArgsConstructor

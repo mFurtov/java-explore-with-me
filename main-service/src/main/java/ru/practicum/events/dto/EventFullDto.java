@@ -56,7 +56,6 @@ public class EventFullDto {
         return dateTime.format(formatter);
     }
 
-    @Embeddable
     @Data
     public static class Location {
         @Column(nullable = false)

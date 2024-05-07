@@ -36,20 +36,27 @@ public class CategoryController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void dellCategory(@PathVariable int id) {
         categoryService.dellCategory(id);
+        log.info("Удалена категория {}", id);
     }
 
     @PatchMapping("/admin/categories/{id}")
-    CategoryDto patchCategory(@PathVariable int id, @RequestBody @Validated(Update.class) RequestCategoryDto requestCategoryDto) {
-        return categoryService.patchCategory(id, requestCategoryDto);
+    public CategoryDto patchCategory(@PathVariable int id, @RequestBody @Validated(Update.class) RequestCategoryDto requestCategoryDto) {
+        CategoryDto categoryDto = categoryService.patchCategory(id, requestCategoryDto);
+        log.info("Обновленна категория {}", id);
+        return categoryDto;
     }
 
     @GetMapping("/categories")
     public List<CategoryDto> getAllCategory(@RequestParam(defaultValue = "0") @PositiveOrZero int from, @RequestParam(defaultValue = "10") @Min(1) int size) {
-        return categoryService.getAllCategory(PageableCreate.getPageable(from, size, Sort.by(Sort.Direction.ASC, "id")));
+        List<CategoryDto> categoryDtos = categoryService.getAllCategory(PageableCreate.getPageable(from, size, Sort.by(Sort.Direction.ASC, "id")));
+        log.info("Выведенк список категорий {}", categoryDtos.size());
+        return categoryDtos;
     }
 
     @GetMapping("/categories/{catId}")
     public CategoryDto getCategoryById(@PathVariable int catId) {
-        return categoryService.getCategoryById(catId);
+        CategoryDto categoryDto = categoryService.getCategoryById(catId);
+        log.info("Выведенна категория {}", catId);
+        return categoryDto;
     }
 }

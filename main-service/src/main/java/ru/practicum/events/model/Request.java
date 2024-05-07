@@ -15,7 +15,9 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 public class Request {
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
     @Column(name = "created")
     private LocalDateTime created = LocalDateTime.now();
 
@@ -23,10 +25,6 @@ public class Request {
     @JoinColumn(name = "event")
     @ToString.Exclude
     private Event event;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "requester")

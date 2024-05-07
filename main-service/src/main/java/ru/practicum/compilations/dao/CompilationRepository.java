@@ -3,12 +3,14 @@ package ru.practicum.compilations.dao;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Repository;
 import ru.practicum.compilations.modul.Compilation;
 import ru.practicum.exception.NotFoundException;
 
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public interface CompilationRepository extends JpaRepository<Compilation, Integer> {
     default Compilation findByIdOrThrow(Integer id) {
         Optional<Compilation> compilation = findById(id);
