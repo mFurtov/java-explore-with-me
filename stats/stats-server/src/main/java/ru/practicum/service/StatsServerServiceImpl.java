@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.dao.StatsServerRepository;
 import ru.practicum.dto.StatsDtoRequest;
 import ru.practicum.dto.StatsDtoResponse;
+import ru.practicum.exception.DataValidException;
 import ru.practicum.mapper.StatsMapper;
 
 import java.time.LocalDateTime;
@@ -25,6 +26,9 @@ public class StatsServerServiceImpl implements StatsServerService {
     @Transactional
     @Override
     public List<StatsDtoResponse> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, Boolean unique) {
+        if (start.isAfter(end)) {
+            throw new DataValidException("Data is not valid");
+        }
         if (unique) {
             if (uris != null) {
                 return statsServerRepository.searchStatsFromDataAndUrisAndUniqueIp(start, end, uris);

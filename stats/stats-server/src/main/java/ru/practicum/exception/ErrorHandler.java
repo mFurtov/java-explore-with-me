@@ -3,6 +3,7 @@ package ru.practicum.exception;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -18,9 +19,16 @@ public class ErrorHandler {
         return new ErrorResponse(e.getMessage());
     }
 
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @ExceptionHandler(MissingServletRequestParameterException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse validDataArgumentException(final MethodArgumentTypeMismatchException e) {
+    public ErrorResponse validMissingParameterException(final MissingServletRequestParameterException e) {
+        log.debug("Ошибка валидации 400 Bad request {}", e.getMessage());
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler({MethodArgumentTypeMismatchException.class, DataValidException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse validDataArgumentException(final RuntimeException e) {
         log.debug("Ошибка валидации даты 400 Bad request {}", e.getMessage());
         return new ErrorResponse(e.getMessage());
     }

@@ -1,30 +1,47 @@
 package ru.practicum;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.*;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpStatusCodeException;
-import org.springframework.web.client.RestTemplate;
-import ru.practicum.dto.StatsDtoRequest;
+import org.springframework.web.util.DefaultUriBuilderFactory;
+import ru.practicum.BaseClient.BaseClient;
+import ru.practicum.exception.ServerException;
+import ru.practicum.dto.EventStatDto;
 
 import java.util.List;
 import java.util.Map;
 
-public class StatsClient {
-    private final RestTemplate restTemplate;
+@Service
 
-    public StatsClient(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
+public class StatsClient extends BaseClient {
+    private static final String API_PREFIX = "/";
+
+    String url;
+
+    @Autowired
+    public StatsClient(@Value("${stat.server.url}") String url,
+                       RestTemplateBuilder builder) {
+        super(
+                builder
+                        .uriTemplateHandler(new DefaultUriBuilderFactory(url + API_PREFIX))
+                        .requestFactory(HttpComponentsClientHttpRequestFactory::new)
+                        .build()
+        );
+        this.url = url;
     }
 
-    public ResponseEntity<Object> post(String path, StatsDtoRequest statsDtoRequest) {
-        HttpEntity<Object> requestEntity = new HttpEntity<>(statsDtoRequest, defaultHeaders());
-        ResponseEntity<Object> statsServerResponse;
+    public void post(EventStatDto eventStatDto) {
         try {
-            statsServerResponse = restTemplate.exchange(path, HttpMethod.POST, requestEntity, Object.class);
+            rest.exchange(url + "/hit", HttpMethod.POST, new HttpEntity<>(eventStatDto, defaultHeaders()),
+                    Object.class);
         } catch (HttpStatusCodeException e) {
-            return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsByteArray());
+            throw new ServerException("Ошибка клиента при отправке метода post");
         }
-        return prepareGatewayResponse(statsServerResponse);
     }
 
     public ResponseEntity<Object> get(String path, Map<String, Object> parameters) {
@@ -33,9 +50,9 @@ public class StatsClient {
         ResponseEntity<Object> statsClientResponse;
         try {
             if (parameters != null) {
-                statsClientResponse = restTemplate.exchange(path, HttpMethod.GET, requestEntity,Object.class, parameters);
+                statsClientResponse = rest.exchange(path, HttpMethod.GET, requestEntity, Object.class, parameters);
             } else {
-                statsClientResponse = restTemplate.exchange(path, HttpMethod.GET, requestEntity,Object.class);
+                statsClientResponse = rest.exchange(path, HttpMethod.GET, requestEntity, Object.class);
             }
         } catch (HttpStatusCodeException e) {
             return ResponseEntity.status(e.getStatusCode()).body(e.getResponseBodyAsByteArray());
@@ -64,5 +81,6 @@ public class StatsClient {
 
         return responseBuilder.build();
     }
+
 
 }
