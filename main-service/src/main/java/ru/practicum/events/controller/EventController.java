@@ -132,4 +132,10 @@ public class EventController {
         log.info("Выведен ивент {}", eventFullDto.getTitle());
         return eventFullDto;
     }
+
+    @PatchMapping("/users/{userId}/events/{eventId}/rate")
+    public EventShortDto patchRate(@PathVariable int userId, @PathVariable int eventId, @RequestParam String grade){
+        return eventService.postRate(userId, eventId,grade);
+
+    }
 }

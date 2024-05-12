@@ -329,7 +329,7 @@ public class EventServiceImpl implements EventService {
             e.setViews(e.getViews() + 1);
             eventRepository.save(e);
         });
-        postStat(httpServletRequest);
+//        postStat(httpServletRequest);
         return EventMapper.mapEventShortFromEventToList(event);
     }
 
@@ -339,9 +339,47 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findByIdOrThrowPublished(id);
         event.setViews(+1);
         eventRepository.save(event);
-        postStat(httpServletRequest);
+//        postStat(httpServletRequest);
         return EventMapper.mapEventFullFromEvent(event);
     }
+
+    @Transactional
+    @Override
+    public EventShortDto postRate(int userId, int eventId, String grade) {
+        Event event = eventRepository.findByIdOrThrow(eventId);
+
+        if (!event.getState().equals(PUBLISHED)) {
+            throw new ConflictException("The event must be published", HttpStatus.CONFLICT);
+        }
+        if (event.getInitiator().getId() == userId) {
+            throw new ConflictException("A user cannot rate his own event", HttpStatus.CONFLICT);
+        }
+        User user = userService.getUserNDto(userId);
+        Request request = requestsRepository.findByRequesterIdAndEventId(userId, eventId);
+        if (request == null) {
+            throw new ConflictException("The user was not present the event", HttpStatus.CONFLICT);
+        }
+        if (!request.getStatus().equals(CONFIRMED)) {
+            throw new ConflictException("The user is not allowed to the event", HttpStatus.CONFLICT);
+        }
+
+        switch (grade) {
+            case "like":
+                event.setLike(event.getLike() + 1);
+                break;
+            case "dislike":
+                event.setDislike(event.getDislike() + 1);
+                break;
+            default:
+                throw new BadRequestException("The request must indicate \"like\" or \"dislike\" ", HttpStatus.BAD_REQUEST);
+        }
+
+        setRateEvent(event);
+        event.getUsers().add(user);
+        return EventMapper.mapEventShortFromEvent(eventRepository.save(event));
+
+    }
+
 
     private LocalDateTime formatterData(String dataTime) {
         if (dataTime != null) {
@@ -349,6 +387,29 @@ public class EventServiceImpl implements EventService {
             return LocalDateTime.parse(dataTime, formatter);
         } else {
             return null;
+        }
+    }
+
+    private void setRateEvent(Event event) {
+        if (event.getLike() + event.getDislike() == 0) {
+            event.setRate(0);
+        } else {
+            int rating = (event.getLike() * 100) / (event.getLike() + event.getDislike());
+
+            int result = 0;
+            if (rating <= 20) {
+                result = 1;
+            } else if (rating <= 40) {
+                result = 2;
+            } else if (rating <= 60) {
+                result = 3;
+            } else if (rating <= 80) {
+                result = 4;
+            } else {
+                result = 5;
+            }
+
+            event.setRate(result);
         }
     }
 
