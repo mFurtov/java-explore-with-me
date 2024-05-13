@@ -355,6 +355,9 @@ public class EventServiceImpl implements EventService {
             throw new ConflictException("A user cannot rate his own event", HttpStatus.CONFLICT);
         }
         User user = userService.getUserNDto(userId);
+        if(event.getUsers().contains(user)){
+            throw new ConflictException("The user has already voted", HttpStatus.CONFLICT);
+        }
         Request request = requestsRepository.findByRequesterIdAndEventId(userId, eventId);
         if (request == null) {
             throw new ConflictException("The user was not present the event", HttpStatus.CONFLICT);
