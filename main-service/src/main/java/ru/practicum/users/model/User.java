@@ -18,6 +18,8 @@ public class User {
     private String email;
     @Column(name = "name", nullable = false)
     private String name;
+    @Column(name = "rate", nullable = false)
+    private Integer rate;
 
     public User(String email, String name) {
         this.email = email;

@@ -33,7 +33,11 @@ import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
+import static org.springframework.data.domain.Sort.Direction.ASC;
+import static org.springframework.data.domain.Sort.Direction.DESC;
 import static ru.practicum.events.dto.EventRequestStatusUpdateRequestDto.StateActionEventUpdate.REJECTED;
 import static ru.practicum.events.model.State.*;
 
@@ -318,10 +322,10 @@ public class EventServiceImpl implements EventService {
 
         List<Event> event;
         if (onlyAvailable) {
-            Page<Event> page = eventRepository.findAll(spec, PageableCreate.getPageable(from, size, Sort.by(Sort.Direction.ASC, order)));
+            Page<Event> page = eventRepository.findAll(spec, PageableCreate.getPageable(from, size, Sort.by(ASC, order)));
             event = page.getContent();
         } else {
-            Page<Event> page = eventRepository.findAll(spec, PageableCreate.getPageable(from, size, Sort.by(Sort.Direction.ASC, order)));
+            Page<Event> page = eventRepository.findAll(spec, PageableCreate.getPageable(from, size, Sort.by(ASC, order)));
             event = page.getContent();
         }
 
@@ -345,7 +349,7 @@ public class EventServiceImpl implements EventService {
 
     @Transactional
     @Override
-    public EventShortDto postRate(int userId, int eventId, String grade) {
+    public EventShortDto patchRate(int userId, int eventId, String grade) {
         Event event = eventRepository.findByIdOrThrow(eventId);
 
         if (!event.getState().equals(PUBLISHED)) {
@@ -355,7 +359,7 @@ public class EventServiceImpl implements EventService {
             throw new ConflictException("A user cannot rate his own event", HttpStatus.CONFLICT);
         }
         User user = userService.getUserNDto(userId);
-        if(event.getUsers().contains(user)){
+        if (event.getUsers().contains(user)) {
             throw new ConflictException("The user has already voted", HttpStatus.CONFLICT);
         }
         Request request = requestsRepository.findByRequesterIdAndEventId(userId, eventId);
@@ -379,8 +383,30 @@ public class EventServiceImpl implements EventService {
 
         setRateEvent(event);
         event.getUsers().add(user);
+
+        userService.saveUserNDto(satUserRate(event));
+
         return EventMapper.mapEventShortFromEvent(eventRepository.save(event));
 
+    }
+
+    @Override
+    public List<EventShortDto> getRateByParam(String by, List<Integer> grade, int from, int size) {
+        Sort.Direction direction;
+        switch (by.toLowerCase(Locale.ROOT)) {
+            case "high":
+                direction = DESC;
+                break;
+            case "low":
+                direction = ASC;
+                break;
+            default:
+                throw new BadRequestException("Invalid filtering parameter specified", HttpStatus.CONFLICT);
+        }
+        Specification<Event> spec = Specification.where(EventSpecifications.withRates(grade));
+        Page<Event> page = eventRepository.findAll(spec, PageableCreate.getPageable(from, size, Sort.by(direction, "rate")));
+        List<Event> events = page.getContent();
+        return EventMapper.mapEventShortFromEventToList(events);
     }
 
 
@@ -414,6 +440,22 @@ public class EventServiceImpl implements EventService {
 
             event.setRate(result);
         }
+    }
+
+    private User satUserRate(Event event) {
+        List<Event> events = eventRepository.findByInitiatorId(event.getInitiator().getId());
+        List<Integer> eventRatings = events.stream()
+                .map(Event::getRate)
+                .filter(rate -> rate > 0) // Фильтруем рейтинги, оставляя только те, которые больше нуля
+                .collect(Collectors.toList());
+        double averageRating = eventRatings.stream()
+                .mapToInt(Integer::intValue)
+                .average()
+                .orElse(0);
+
+        User user = userService.getUserNDto(event.getInitiator().getId());
+        user.setRate((int) Math.round(averageRating));
+        return user;
     }
 
     private void postStat(HttpServletRequest httpServletRequest) {

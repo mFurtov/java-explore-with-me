@@ -32,6 +32,7 @@ public interface EventService {
 
     EventFullDto getEventById(HttpServletRequest httpServletRequest, int id);
 
-    EventShortDto postRate(int userId, int eventId, String grade);
+    EventShortDto patchRate(int userId, int eventId, String grade);
 
+    List<EventShortDto> getRateByParam(String by, List<Integer> grade, int from, int size);
 }

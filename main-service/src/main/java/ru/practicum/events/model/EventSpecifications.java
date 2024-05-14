@@ -65,4 +65,13 @@ public class EventSpecifications {
             return null;
         };
     }
+
+    public Specification<Event> withRates(List<Integer> rates) {
+        return (root, query, criteriaBuilder) -> {
+            if (rates != null && !rates.isEmpty()) {
+                return root.get("rate").in(rates);
+            }
+            return null;
+        };
+    }
 }

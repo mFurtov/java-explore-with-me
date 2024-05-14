@@ -12,7 +12,7 @@ import java.util.List;
 @UtilityClass
 public class UserMapper {
     public UserDto mapUserDtoFromUser(User user) {
-        return new UserDto(user.getEmail(), user.getId(), user.getName());
+        return new UserDto(user.getEmail(), user.getId(), user.getName(), user.getRate());
     }
 
     public List<UserDto> mapUserDtoFromUserToList(Iterable<User> user) {
