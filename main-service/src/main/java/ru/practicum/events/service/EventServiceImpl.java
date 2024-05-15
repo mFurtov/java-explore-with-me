@@ -333,7 +333,7 @@ public class EventServiceImpl implements EventService {
             e.setViews(e.getViews() + 1);
             eventRepository.save(e);
         });
-//        postStat(httpServletRequest);
+        postStat(httpServletRequest);
         return EventMapper.mapEventShortFromEventToList(event);
     }
 
@@ -343,7 +343,7 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findByIdOrThrowPublished(id);
         event.setViews(+1);
         eventRepository.save(event);
-//        postStat(httpServletRequest);
+        postStat(httpServletRequest);
         return EventMapper.mapEventFullFromEvent(event);
     }
 
@@ -401,7 +401,7 @@ public class EventServiceImpl implements EventService {
                 direction = ASC;
                 break;
             default:
-                throw new BadRequestException("Invalid filtering parameter specified", HttpStatus.CONFLICT);
+                throw new BadRequestException("Invalid filtering parameter specified", HttpStatus.BAD_REQUEST);
         }
         Specification<Event> spec = Specification.where(EventSpecifications.withRates(grade));
         Page<Event> page = eventRepository.findAll(spec, PageableCreate.getPageable(from, size, Sort.by(direction, "rate")));
@@ -446,7 +446,7 @@ public class EventServiceImpl implements EventService {
         List<Event> events = eventRepository.findByInitiatorId(event.getInitiator().getId());
         List<Integer> eventRatings = events.stream()
                 .map(Event::getRate)
-                .filter(rate -> rate > 0) // Фильтруем рейтинги, оставляя только те, которые больше нуля
+                .filter(rate -> rate > 0)
                 .collect(Collectors.toList());
         double averageRating = eventRatings.stream()
                 .mapToInt(Integer::intValue)

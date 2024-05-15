@@ -68,10 +68,15 @@ public class EventSpecifications {
 
     public Specification<Event> withRates(List<Integer> rates) {
         return (root, query, criteriaBuilder) -> {
+            Predicate predicate = criteriaBuilder.conjunction();
             if (rates != null && !rates.isEmpty()) {
-                return root.get("rate").in(rates);
+                predicate = criteriaBuilder.and(predicate, root.get("rate").in(rates));
             }
-            return null;
+
+            predicate = criteriaBuilder.and(predicate, criteriaBuilder.isNotNull(root.get("rate")));
+            predicate = criteriaBuilder.and(predicate, criteriaBuilder.notEqual(root.get("rate"), 0)); // Исключаем события с оценкой 0
+
+            return predicate;
         };
     }
 }

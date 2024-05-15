@@ -35,6 +35,7 @@ public interface EventRepository extends JpaRepository<Event, Integer>, JpaSpeci
     }
 
     List<Event> findByInitiatorId(int id, Pageable sort);
+
     List<Event> findByInitiatorId(int id);
 
     Event findByInitiatorIdAndId(int usrId, int eventId);

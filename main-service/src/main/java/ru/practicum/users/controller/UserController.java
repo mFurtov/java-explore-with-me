@@ -11,7 +11,6 @@ import ru.practicum.Create;
 import ru.practicum.pageable.PageableCreate;
 import ru.practicum.users.dto.NewUserRequest;
 import ru.practicum.users.dto.UserDto;
-import ru.practicum.users.model.User;
 import ru.practicum.users.service.UserService;
 
 import javax.validation.constraints.Min;
@@ -51,6 +50,6 @@ public class UserController {
 
     @GetMapping("/rate")
     public List<UserDto> getUserRate(@RequestParam(defaultValue = "high") String by, @RequestParam(required = false) List<Integer> grade, @RequestParam(defaultValue = "0") @PositiveOrZero int from, @RequestParam(defaultValue = "10") @Min(1) int size) {
-        return userService.getUserRate(by,grade,from,size);
+        return userService.getUserRate(by, grade, from, size);
     }
 }

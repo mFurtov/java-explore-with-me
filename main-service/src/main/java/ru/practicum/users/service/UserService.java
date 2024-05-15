@@ -19,5 +19,5 @@ public interface UserService {
 
     User saveUserNDto(User user);
 
-    List<UserDto> getUserRate (String by, List<Integer> grade, int from, int size);
+    List<UserDto> getUserRate(String by, List<Integer> grade, int from, int size);
 }

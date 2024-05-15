@@ -17,6 +17,7 @@ public class UserSpecifications {
             }
 
             predicate = criteriaBuilder.and(predicate, criteriaBuilder.isNotNull(root.get("rate")));
+            predicate = criteriaBuilder.and(predicate, criteriaBuilder.notEqual(root.get("rate"), 0)); // Исключаем события с оценкой 0
 
             return predicate;
         };
