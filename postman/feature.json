@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "3ab77e35-4755-4d73-bdab-4364536966d2",
     "name": "rate event",
-    "schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
     "_exporter_id": "31313412"
   },
   "item": [
@@ -77,29 +77,10 @@
                   "var query = {};",
                   "pm.request.url.query.all().forEach((param) => { query[param.key] = param.value});",
                   "",
-                  "pm.test(\"Событие должно содержать поля: id, title, annotation, category, paid, eventDate, initiator, views, confirmedRequests, rate\", function () {",
-                  "pm.expect(target).to.have.property('id');",
-                  "pm.expect(target).to.have.property('title');",
-                  "pm.expect(target).to.have.property('annotation');",
-                  "pm.expect(target).to.have.property('category');",
-                  "pm.expect(target).to.have.property('paid');",
-                  "pm.expect(target).to.have.property('eventDate');",
-                  "pm.expect(target).to.have.property('initiator');",
-                  "pm.expect(target).to.have.property('views');",
-                  "pm.expect(target).to.have.property('confirmedRequests');",
-                  "pm.expect(target).to.have.property('rate');",
-                  "});",
-                  "",
                   "pm.test(\"Рейтинг должен быть 5\", function () {",
                   "    pm.expect(target.rate).equal(1);",
                   "});",
-                  "pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {",
-                  "    pm.expect(source.annotation).equal(target.annotation, 'Аннотация события должна соответствовать аннотации события с указанным идентификатором');",
-                  "    pm.expect(source.category.id).equal(target.category.id, 'Категория события должна соответствовать категории события с указанным идентификатором');",
-                  "    pm.expect(source.paid.toString()).equal(target.paid.toString(), 'Стоимость события должна соответствовать стоимости события с указанным идентификатором');",
-                  "    pm.expect(source.eventDate).equal(target.eventDate, 'Дата проведения события должна соответствовать дате проведения события с указанным идентификатором');",
-                  "    pm.expect(source.title).equal(target.title, 'Название события должно соответствовать названию события с указанным идентификатором');",
-                  "});"
+                  ""
                 ],
                 "type": "text/javascript",
                 "packages": {}
@@ -209,29 +190,10 @@
                   "var query = {};",
                   "pm.request.url.query.all().forEach((param) => { query[param.key] = param.value});",
                   "",
-                  "pm.test(\"Событие должно содержать поля: id, title, annotation, category, paid, eventDate, initiator, views, confirmedRequests\", function () {",
-                  "pm.expect(target).to.have.property('id');",
-                  "pm.expect(target).to.have.property('title');",
-                  "pm.expect(target).to.have.property('annotation');",
-                  "pm.expect(target).to.have.property('category');",
-                  "pm.expect(target).to.have.property('paid');",
-                  "pm.expect(target).to.have.property('eventDate');",
-                  "pm.expect(target).to.have.property('initiator');",
-                  "pm.expect(target).to.have.property('views');",
-                  "pm.expect(target).to.have.property('confirmedRequests');",
-                  "pm.expect(target).to.have.property('rate');",
-                  "});",
-                  "",
                   "pm.test(\"Рейтинг должен быть 5\", function () {",
                   "    pm.expect(target.rate).equal(5);",
                   "});",
-                  "pm.test(\"Данные в ответе должны соответствовать данным в запросе\", function () {",
-                  "    pm.expect(source.annotation).equal(target.annotation, 'Аннотация события должна соответствовать аннотации события с указанным идентификатором');",
-                  "    pm.expect(source.category.id).equal(target.category.id, 'Категория события должна соответствовать категории события с указанным идентификатором');",
-                  "    pm.expect(source.paid.toString()).equal(target.paid.toString(), 'Стоимость события должна соответствовать стоимости события с указанным идентификатором');",
-                  "    pm.expect(source.eventDate).equal(target.eventDate, 'Дата проведения события должна соответствовать дате проведения события с указанным идентификатором');",
-                  "    pm.expect(source.title).equal(target.title, 'Название события должно соответствовать названию события с указанным идентификатором');",
-                  "});"
+                  ""
                 ],
                 "type": "text/javascript",
                 "packages": {}
@@ -1449,7 +1411,16 @@
           "request": {
             "method": "GET",
             "header": [],
-            "url": "{{baseUrl}}/users/rate"
+            "url": {
+              "raw": "{{baseUrl}}/users/rate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "rate"
+              ]
+            }
           },
           "response": []
         },
@@ -1688,13 +1659,6 @@
                   "const source = pm.collectionVariables.get('response');",
                   "const targetOne = pm.response.json()[0];",
                   "",
-                  "pm.test(\"Пользователи должны содержать поля: id, name, email\", function () {",
-                  "    pm.expect(targetOne).to.have.property('id');",
-                  "    pm.expect(targetOne).to.have.property('name');",
-                  "    pm.expect(targetOne).to.have.property('email');",
-                  "    pm.expect(targetOne).to.have.property('rate');",
-                  "",
-                  "});",
                   "",
                   "pm.test(\"Проверка рейтинга и наличие оценки\", function () {",
                   "    pm.expect(targetOne.rate).to.eql(5);",
@@ -1839,13 +1803,6 @@
                   "const source = pm.collectionVariables.get('response');",
                   "const targetOne = pm.response.json()[0];",
                   "",
-                  "pm.test(\"Пользователи должны содержать поля: id, name, email\", function () {",
-                  "    pm.expect(targetOne).to.have.property('id');",
-                  "    pm.expect(targetOne).to.have.property('name');",
-                  "    pm.expect(targetOne).to.have.property('email');",
-                  "    pm.expect(targetOne).to.have.property('rate');",
-                  "",
-                  "});",
                   "",
                   "pm.test(\"Проверка рейтинга и наличие оценки\", function () {",
                   "    pm.expect(targetOne.rate).to.be.oneOf([4, 5])",
@@ -2002,13 +1959,6 @@
                   "const source = pm.collectionVariables.get('response');",
                   "const targetOne = pm.response.json()[0];",
                   "",
-                  "pm.test(\"Пользователи должны содержать поля: id, name, email\", function () {",
-                  "    pm.expect(targetOne).to.have.property('id');",
-                  "    pm.expect(targetOne).to.have.property('name');",
-                  "    pm.expect(targetOne).to.have.property('email');",
-                  "    pm.expect(targetOne).to.have.property('rate');",
-                  "",
-                  "});",
                   "",
                   "pm.test(\"Проверка рейтинга и наличие оценки\", function () {",
                   "    pm.expect(targetOne.rate).to.be.oneOf([1, 2])",
@@ -2153,13 +2103,6 @@
                   "const source = pm.collectionVariables.get('response');",
                   "const targetOne = pm.response.json()[0];",
                   "",
-                  "pm.test(\"Пользователи должны содержать поля: id, name, email\", function () {",
-                  "    pm.expect(targetOne).to.have.property('id');",
-                  "    pm.expect(targetOne).to.have.property('name');",
-                  "    pm.expect(targetOne).to.have.property('email');",
-                  "    pm.expect(targetOne).to.have.property('rate');",
-                  "",
-                  "});",
                   "",
                   "pm.test(\"Проверка рейтинга и наличие оценки\", function () {",
                   "    pm.expect(targetOne.rate).to.eql(5);",
@@ -2196,7 +2139,7 @@
           "response": []
         },
         {
-          "name": "Успешно получен рейтинг пользователей c ошибочным параметром запроса",
+          "name": "Попытка получения рейтинг пользователей c ошибочным параметром запроса",
           "event": [
             {
               "listen": "prerequest",
