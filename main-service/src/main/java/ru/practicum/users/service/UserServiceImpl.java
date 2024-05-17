@@ -63,11 +63,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public User saveUserNDto(User user) {
         return userRepository.save(user);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<UserDto> getUserRate(String by, List<Integer> grade, int from, int size) {
         Sort.Direction direction;
         switch (by.toLowerCase(Locale.ROOT)) {

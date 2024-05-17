@@ -135,11 +135,15 @@ public class EventController {
 
     @PatchMapping("/users/{userId}/events/{eventId}/rate")
     public EventShortDto patchRate(@PathVariable int userId, @PathVariable int eventId, @RequestParam String grade) {
-        return eventService.patchRate(userId, eventId, grade);
+        EventShortDto eventShortDto = eventService.patchRate(userId, eventId, grade);
+        log.info("Выведен ивент {}", eventShortDto.getTitle());
+        return eventShortDto;
     }
 
     @GetMapping("/users/rate")
     public List<EventShortDto> getRateByParam(@RequestParam(defaultValue = "high") String by, @RequestParam(required = false) List<Integer> grade, @RequestParam(defaultValue = "0") @PositiveOrZero int from, @RequestParam(defaultValue = "10") @Min(1) int size) {
-        return eventService.getRateByParam(by, grade, from, size);
+        List<EventShortDto> eventShortDtos = eventService.getRateByParam(by, grade, from, size);
+        log.info("Выведен рейтинг ивентов разером {}", eventShortDtos.size());
+        return eventShortDtos;
     }
 }

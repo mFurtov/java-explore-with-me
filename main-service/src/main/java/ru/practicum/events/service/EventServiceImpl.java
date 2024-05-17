@@ -353,20 +353,25 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findByIdOrThrow(eventId);
 
         if (!event.getState().equals(PUBLISHED)) {
+            log.debug("Ивент не опубликован");
             throw new ConflictException("The event must be published", HttpStatus.CONFLICT);
         }
         if (event.getInitiator().getId() == userId) {
+            log.debug("Юзер не может голосовать за свой же ивент");
             throw new ConflictException("A user cannot rate his own event", HttpStatus.CONFLICT);
         }
         User user = userService.getUserNDto(userId);
         if (event.getUsers().contains(user)) {
+            log.debug("Юзер уже голосовал");
             throw new ConflictException("The user has already voted", HttpStatus.CONFLICT);
         }
         Request request = requestsRepository.findByRequesterIdAndEventId(userId, eventId);
         if (request == null) {
+            log.debug("Запрос не найден");
             throw new ConflictException("The user was not present the event", HttpStatus.CONFLICT);
         }
         if (!request.getStatus().equals(CONFIRMED)) {
+            log.debug("Запрос не подтвержден");
             throw new ConflictException("The user is not allowed to the event", HttpStatus.CONFLICT);
         }
 
@@ -378,6 +383,7 @@ public class EventServiceImpl implements EventService {
                 event.setDislike(event.getDislike() + 1);
                 break;
             default:
+                log.debug("Введен неверный порядок сортировки");
                 throw new BadRequestException("The request must indicate \"like\" or \"dislike\" ", HttpStatus.BAD_REQUEST);
         }
 
@@ -391,6 +397,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<EventShortDto> getRateByParam(String by, List<Integer> grade, int from, int size) {
         Sort.Direction direction;
         switch (by.toLowerCase(Locale.ROOT)) {
@@ -401,6 +408,7 @@ public class EventServiceImpl implements EventService {
                 direction = ASC;
                 break;
             default:
+                log.debug("Введен неверный порядок сортировки");
                 throw new BadRequestException("Invalid filtering parameter specified", HttpStatus.BAD_REQUEST);
         }
         Specification<Event> spec = Specification.where(EventSpecifications.withRates(grade));
