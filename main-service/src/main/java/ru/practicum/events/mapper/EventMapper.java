@@ -13,7 +13,7 @@ import java.util.List;
 @UtilityClass
 public class EventMapper {
     public EventShortDto mapEventShortFromEvent(Event event) {
-        return new EventShortDto(event.getAnnotation(), CategoryMapper.mapCategoryDtoFromCategory(event.getCategory()), event.getConfirmedRequests(), event.getEventDate(), event.getId(), UserMapper.mapUserDtoFromUser(event.getInitiator()), event.getPaid(), event.getTitle(), event.getViews());
+        return new EventShortDto(event.getAnnotation(), CategoryMapper.mapCategoryDtoFromCategory(event.getCategory()), event.getConfirmedRequests(), event.getEventDate(), event.getId(), UserMapper.mapUserDtoFromUser(event.getInitiator()), event.getPaid(), event.getTitle(), event.getViews(),event.getRate());
     }
 
     public List<EventShortDto> mapEventShortFromEventToList(Iterable<Event> event) {

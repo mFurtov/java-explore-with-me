@@ -8,6 +8,7 @@ import ru.practicum.users.model.User;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Entity
 @Table(name = "events")
@@ -55,6 +56,18 @@ public class Event {
     private String title;
     @Column(name = "views")
     private int views;
+    @Column(name = "rate")
+    private int rate;
+    @Column(name = "like_event")
+    private int like;
+    @Column(name = "dislike_event")
+    private int dislike;
+    @ManyToMany
+    @JoinTable(
+            name = "user_vote",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id"))
+    private List<User> users;
 
     public Event(String annotation, Category category, String description, String eventDate, User initiator, Location location, Boolean paid, int participantLimit, boolean requestModeration, String title) {
         this.annotation = annotation;
@@ -68,7 +81,12 @@ public class Event {
         this.participantLimit = participantLimit;
         this.requestModeration = requestModeration;
         this.title = title;
+        this.rate = 0;
+        this.like = 0;
+        this.dislike = 0;
     }
+
+
 
     private LocalDateTime formatterData(@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") String dataTime) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

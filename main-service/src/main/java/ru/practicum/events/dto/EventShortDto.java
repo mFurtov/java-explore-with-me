@@ -20,8 +20,9 @@ public class EventShortDto {
     private Boolean paid;
     private String title;
     private int views;
+    private int rate;
 
-    public EventShortDto(String annotation, CategoryDto category, int confirmedRequests, LocalDateTime eventDate, int id, UserDto initiator, Boolean paid, String title, int views) {
+    public EventShortDto(String annotation, CategoryDto category, int confirmedRequests, LocalDateTime eventDate, int id, UserDto initiator, Boolean paid, String title, int views, int rate) {
         this.annotation = annotation;
         this.category = category;
         this.confirmedRequests = confirmedRequests;
@@ -31,6 +32,7 @@ public class EventShortDto {
         this.paid = paid;
         this.title = title;
         this.views = views;
+        this.rate = rate;
     }
 
     private String formatData(LocalDateTime dateTime) {

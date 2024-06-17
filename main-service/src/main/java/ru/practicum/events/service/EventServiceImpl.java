@@ -33,7 +33,11 @@ import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
+import static org.springframework.data.domain.Sort.Direction.ASC;
+import static org.springframework.data.domain.Sort.Direction.DESC;
 import static ru.practicum.events.dto.EventRequestStatusUpdateRequestDto.StateActionEventUpdate.REJECTED;
 import static ru.practicum.events.model.State.*;
 
@@ -318,10 +322,10 @@ public class EventServiceImpl implements EventService {
 
         List<Event> event;
         if (onlyAvailable) {
-            Page<Event> page = eventRepository.findAll(spec, PageableCreate.getPageable(from, size, Sort.by(Sort.Direction.ASC, order)));
+            Page<Event> page = eventRepository.findAll(spec, PageableCreate.getPageable(from, size, Sort.by(ASC, order)));
             event = page.getContent();
         } else {
-            Page<Event> page = eventRepository.findAll(spec, PageableCreate.getPageable(from, size, Sort.by(Sort.Direction.ASC, order)));
+            Page<Event> page = eventRepository.findAll(spec, PageableCreate.getPageable(from, size, Sort.by(ASC, order)));
             event = page.getContent();
         }
 
@@ -343,6 +347,77 @@ public class EventServiceImpl implements EventService {
         return EventMapper.mapEventFullFromEvent(event);
     }
 
+    @Transactional
+    @Override
+    public EventShortDto patchRate(int userId, int eventId, String grade) {
+        Event event = eventRepository.findByIdOrThrow(eventId);
+
+        if (!event.getState().equals(PUBLISHED)) {
+            log.debug("Ивент не опубликован");
+            throw new ConflictException("The event must be published", HttpStatus.CONFLICT);
+        }
+        if (event.getInitiator().getId() == userId) {
+            log.debug("Юзер не может голосовать за свой же ивент");
+            throw new ConflictException("A user cannot rate his own event", HttpStatus.CONFLICT);
+        }
+        User user = userService.getUserNDto(userId);
+        if (event.getUsers().contains(user)) {
+            log.debug("Юзер уже голосовал");
+            throw new ConflictException("The user has already voted", HttpStatus.CONFLICT);
+        }
+        Request request = requestsRepository.findByRequesterIdAndEventId(userId, eventId);
+        if (request == null) {
+            log.debug("Запрос не найден");
+            throw new ConflictException("The user was not present the event", HttpStatus.CONFLICT);
+        }
+        if (!request.getStatus().equals(CONFIRMED)) {
+            log.debug("Запрос не подтвержден");
+            throw new ConflictException("The user is not allowed to the event", HttpStatus.CONFLICT);
+        }
+
+        switch (grade) {
+            case "like":
+                event.setLike(event.getLike() + 1);
+                break;
+            case "dislike":
+                event.setDislike(event.getDislike() + 1);
+                break;
+            default:
+                log.debug("Введен неверный порядок сортировки");
+                throw new BadRequestException("The request must indicate \"like\" or \"dislike\" ", HttpStatus.BAD_REQUEST);
+        }
+
+        setRateEvent(event);
+        event.getUsers().add(user);
+
+        userService.saveUserNDto(satUserRate(event));
+
+        return EventMapper.mapEventShortFromEvent(eventRepository.save(event));
+
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<EventShortDto> getRateByParam(String by, List<Integer> grade, int from, int size) {
+        Sort.Direction direction;
+        switch (by.toLowerCase(Locale.ROOT)) {
+            case "high":
+                direction = DESC;
+                break;
+            case "low":
+                direction = ASC;
+                break;
+            default:
+                log.debug("Введен неверный порядок сортировки");
+                throw new BadRequestException("Invalid filtering parameter specified", HttpStatus.BAD_REQUEST);
+        }
+        Specification<Event> spec = Specification.where(EventSpecifications.withRates(grade));
+        Page<Event> page = eventRepository.findAll(spec, PageableCreate.getPageable(from, size, Sort.by(direction, "rate")));
+        List<Event> events = page.getContent();
+        return EventMapper.mapEventShortFromEventToList(events);
+    }
+
+
     private LocalDateTime formatterData(String dataTime) {
         if (dataTime != null) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -350,6 +425,45 @@ public class EventServiceImpl implements EventService {
         } else {
             return null;
         }
+    }
+
+    private void setRateEvent(Event event) {
+        if (event.getLike() + event.getDislike() == 0) {
+            event.setRate(0);
+        } else {
+            int rating = (event.getLike() * 100) / (event.getLike() + event.getDislike());
+
+            int result = 0;
+            if (rating <= 20) {
+                result = 1;
+            } else if (rating <= 40) {
+                result = 2;
+            } else if (rating <= 60) {
+                result = 3;
+            } else if (rating <= 80) {
+                result = 4;
+            } else {
+                result = 5;
+            }
+
+            event.setRate(result);
+        }
+    }
+
+    private User satUserRate(Event event) {
+        List<Event> events = eventRepository.findByInitiatorId(event.getInitiator().getId());
+        List<Integer> eventRatings = events.stream()
+                .map(Event::getRate)
+                .filter(rate -> rate > 0)
+                .collect(Collectors.toList());
+        double averageRating = eventRatings.stream()
+                .mapToInt(Integer::intValue)
+                .average()
+                .orElse(0);
+
+        User user = userService.getUserNDto(event.getInitiator().getId());
+        user.setRate((int) Math.round(averageRating));
+        return user;
     }
 
     private void postStat(HttpServletRequest httpServletRequest) {

@@ -16,4 +16,8 @@ public interface UserService {
     void dellUser(int id);
 
     User getUserNDto(int userId);
+
+    User saveUserNDto(User user);
+
+    List<UserDto> getUserRate(String by, List<Integer> grade, int from, int size);
 }

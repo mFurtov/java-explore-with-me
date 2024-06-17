@@ -47,4 +47,11 @@ public class UserController {
         userService.dellUser(id);
         log.info("Пользователь с id \"{}\" удален", id);
     }
+
+    @GetMapping("/rate")
+    public List<UserDto> getUserRate(@RequestParam(defaultValue = "high") String by, @RequestParam(required = false) List<Integer> grade, @RequestParam(defaultValue = "0") @PositiveOrZero int from, @RequestParam(defaultValue = "10") @Min(1) int size) {
+        List<UserDto> userDtos = userService.getUserRate(by, grade, from, size);
+        log.info("Выведен рейтинг пользователей разером \"{}\"", userDtos.size());
+        return userDtos;
+    }
 }

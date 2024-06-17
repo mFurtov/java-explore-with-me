@@ -31,4 +31,8 @@ public interface EventService {
     List<EventShortDto> findEventToParams(HttpServletRequest httpServletRequest, String text, List<Integer> category, Boolean paid, LocalDateTime start, LocalDateTime end, Boolean onlyAvailable, String order, int from, int size);
 
     EventFullDto getEventById(HttpServletRequest httpServletRequest, int id);
+
+    EventShortDto patchRate(int userId, int eventId, String grade);
+
+    List<EventShortDto> getRateByParam(String by, List<Integer> grade, int from, int size);
 }

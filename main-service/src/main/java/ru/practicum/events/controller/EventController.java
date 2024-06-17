@@ -35,7 +35,7 @@ public class EventController {
     public EventFullDto postEvent(@PathVariable int userId, @Validated(Create.class) @RequestBody NewEventDto newEventDto) {
         EventFullDto eventFullDto = eventService.postEvent(userId, newEventDto);
         log.info("Добавлен ивент {}", eventFullDto.getTitle());
-        return eventService.postEvent(userId, newEventDto);
+        return eventFullDto;
     }
 
     @GetMapping("/users/{userId}/events")
@@ -131,5 +131,19 @@ public class EventController {
         EventFullDto eventFullDto = eventService.getEventById(httpServletRequest, id);
         log.info("Выведен ивент {}", eventFullDto.getTitle());
         return eventFullDto;
+    }
+
+    @PatchMapping("/users/{userId}/events/{eventId}/rate")
+    public EventShortDto patchRate(@PathVariable int userId, @PathVariable int eventId, @RequestParam String grade) {
+        EventShortDto eventShortDto = eventService.patchRate(userId, eventId, grade);
+        log.info("Выведен ивент {}", eventShortDto.getTitle());
+        return eventShortDto;
+    }
+
+    @GetMapping("/users/rate")
+    public List<EventShortDto> getRateByParam(@RequestParam(defaultValue = "high") String by, @RequestParam(required = false) List<Integer> grade, @RequestParam(defaultValue = "0") @PositiveOrZero int from, @RequestParam(defaultValue = "10") @Min(1) int size) {
+        List<EventShortDto> eventShortDtos = eventService.getRateByParam(by, grade, from, size);
+        log.info("Выведен рейтинг ивентов разером {}", eventShortDtos.size());
+        return eventShortDtos;
     }
 }
