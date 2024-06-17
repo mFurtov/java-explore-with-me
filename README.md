@@ -18,5 +18,7 @@
 **Docker**: версия 20.10 или выше\
 **Docker Compose**: версия 1.27 или выше
 
-Стек технологий: Java, Spring Boot, Maven, PostgreSQL, Docker
+Стек технологий:
+---
+Java, Spring Boot, Maven, PostgreSQL, Docker
 
